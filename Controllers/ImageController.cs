@@ -15,7 +15,7 @@ namespace Dermatologiya.Server.Controllers
             _imageService = imageService;
         }
         [HttpPost("upload")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> UploadImage(IFormFile file)
         {
             try
@@ -48,22 +48,41 @@ namespace Dermatologiya.Server.Controllers
         {
             try
             {
-                var result = await _imageService.GetImageById(Id);
-                if (result == null)
+                var imageUrl = await _imageService.GetImageById(Id);
+                if (string.IsNullOrWhiteSpace(imageUrl))
                     return NotFound("Image not found");
 
-                string res = GetContentType(result);
+                var uri = new Uri(imageUrl);
+                var baseUrl = imageUrl.Split('?')[0]; // Toza URL (fayl nomigacha)
+                var contentType = GetContentType(baseUrl); // Masalan, "image/png"
 
-                return File(System.IO.File.ReadAllBytes(result), res);
+                using var httpClient = new HttpClient();
+                var imageBytes = await httpClient.GetByteArrayAsync(imageUrl); // Rasmni yuklaymiz
+
+                return File(imageBytes, contentType);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
+            //try
+            //{
+            //    var result = await _imageService.GetImageById(Id);
+            //    if (result == null)
+            //        return NotFound("Image not found");
+
+            //    string res = GetContentType(result);
+
+            //    return File(System.IO.File.ReadAllBytes(result), res);
+            //}
+            //catch (Exception ex)
+            //{
+            //    return BadRequest(ex.Message);
+            //}
         }
 
         [HttpDelete("{Id}")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> DeleteImage(int Id)
         {
 

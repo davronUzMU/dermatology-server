@@ -17,10 +17,10 @@ namespace Dermatologiya.Server.Services
         //    _imageRepository = imageRepository;
         //}
 
-        private readonly IMinioClient _minioClient;
+        private readonly MinioClient _minioClient;
         private readonly IImageRepository _imageRepository;
         private readonly string _bucketName = "dermatology";
-        public ImageService(IImageRepository imageRepository, IMinioClient minioClient)
+        public ImageService(IImageRepository imageRepository, MinioClient minioClient)
         {
             _imageRepository = imageRepository;
             _minioClient = minioClient;
